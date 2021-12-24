@@ -29,6 +29,7 @@ namespace oneflow {
 namespace one {
 
 Maybe<bool> IsContiguous(const std::shared_ptr<Tensor>& tensor) {
+  if (tensor->is_lazy() || tensor->is_consistent()) { return true; }
   const Shape& shape = *tensor->shape();
   const Stride& stride = *JUST(tensor->stride());
   int64_t dim = shape.NumAxes();
