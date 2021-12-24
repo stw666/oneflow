@@ -58,7 +58,6 @@ Maybe<Tensor> BasicView(const std::shared_ptr<Tensor>& input, const Shape& targe
    * them are memory contiguous, but has different shapes/strides.
    */
   Stride target_strides(target_shape);
-  storage_offset = storage_offset + JUST(JUST(input->AsMirroredTensor())->storage_offset());
   // TODO(): Check shape compatible.
   auto device = JUST(input->device());
   auto tensor_meta = std::make_shared<MirroredTensorMeta>(
@@ -98,19 +97,19 @@ Maybe<Tensor> Reshape(const std::shared_ptr<Tensor>& input, const Shape& shape) 
       count *= shape.At(i);
     }
   }
-
+  int64_t storage_offset = JUST(JUST(input->AsMirroredTensor())->storage_offset());
   std::shared_ptr<Tensor> output;
   size_t x_count = input->shape()->Count(0);
   if (need_infer_axis == -1) {
     CHECK_EQ_OR_RETURN(shape.Count(0), x_count);
-    output = JUST(BasicView(input, shape, 0));
+    output = JUST(BasicView(input, shape, storage_offset));
   } else {
     Shape infered_shape = shape;
     infered_shape.Set(need_infer_axis, x_count / count);
     CHECK_EQ_OR_RETURN(infered_shape.Count(0), x_count)
         << "Shape " << shape.ToString() << " is invalid for input of shape "
         << input->shape()->ToString();
-    output = JUST(BasicView(input, infered_shape, 0));
+    output = JUST(BasicView(input, infered_shape, storage_offset));
   }
 
   if (autograd::GradMode::is_enabled() && input->requires_grad()) {
