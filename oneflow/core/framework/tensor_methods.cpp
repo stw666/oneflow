@@ -58,12 +58,17 @@ Maybe<Tensor> BasicView(const std::shared_ptr<Tensor>& input, const Shape& targe
    * The viewed tensor shared memory with input tensor, and both of
    * them are memory contiguous, but has different shapes/strides.
    */
-  Stride target_strides(target_shape);
+  Stride target_stride(target_shape);
+  return BasicView(input, target_shape, target_stride, storage_offset);
+}
+
+Maybe<Tensor> BasicView(const std::shared_ptr<Tensor>& input, const Shape& target_shape,
+                        const Stride& target_stride, int64_t storage_offset) {
   // TODO(): Check shape compatible.
   auto device = JUST(input->device());
   auto tensor_meta = std::make_shared<MirroredTensorMeta>(
       std::make_shared<Shape>(target_shape), input->dtype()->data_type(), device,
-      std::make_shared<Stride>(target_strides), storage_offset);
+      std::make_shared<Stride>(target_stride), storage_offset);
 
   CHECK_OR_RETURN(JUST(input->has_eager_blob_object()));
   // new output tensor
@@ -131,6 +136,7 @@ Maybe<Tensor> Reshape(const std::shared_ptr<Tensor>& input, const Shape& shape) 
   }
   return output;
 }
+
 
 }  // namespace view
 }  // namespace one

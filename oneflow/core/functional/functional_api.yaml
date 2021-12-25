@@ -1039,6 +1039,10 @@
   signature: "Tensor (Tensor x, Shape shape) => Reshape"
   bind_python: True
 
+- name: "contiguous"
+  signature: "Tensor (Tensor input) => ToContiguous"
+  bind_python: True
+
 - name: "slice"
   signature: "Tensor (Tensor x, Int64List start, Int64List stop, Int64List step) => Slice"
   bind_python: True
