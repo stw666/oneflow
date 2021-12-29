@@ -336,8 +336,8 @@ class LayerNormGpuKernel final : public user_op::OpKernel, public user_op::CudaG
                        && (user_op::HobDataType("x", 0) == GetDataType<dtype>::value));
 
 REGISTER_LAYER_NORM_CUDA_KERNEL(float)
-REGISTER_LAYER_NORM_CUDA_KERNEL(double)
-REGISTER_LAYER_NORM_CUDA_KERNEL(half)
+//REGISTER_LAYER_NORM_CUDA_KERNEL(double)
+//REGISTER_LAYER_NORM_CUDA_KERNEL(half)
 
 template<typename T>
 class LayerNormGradGpuKernel final : public user_op::OpKernel, public user_op::CudaGraphSupport {
@@ -387,8 +387,8 @@ class LayerNormGradGpuKernel final : public user_op::OpKernel, public user_op::C
           });
 
 REGISTER_LAYER_NORM_GRAD_CUDA_KERNEL(float)
-REGISTER_LAYER_NORM_GRAD_CUDA_KERNEL(double)
-REGISTER_LAYER_NORM_GRAD_CUDA_KERNEL(half)
+//REGISTER_LAYER_NORM_GRAD_CUDA_KERNEL(double)
+//REGISTER_LAYER_NORM_GRAD_CUDA_KERNEL(half)
 
 template<typename T>
 class LayerNormParamGradGpuKernel final : public user_op::OpKernel,

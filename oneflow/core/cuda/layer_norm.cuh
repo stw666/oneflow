@@ -63,11 +63,11 @@ __inline__ __device__ T Div(T a, T b);
 
 template<>
 __inline__ __device__ float Div<float>(float a, float b) {
-#ifdef OF_LAYER_NORM_USE_FAST_MATH
-  return __fdividef(a, b);
-#else
+//#ifdef OF_LAYER_NORM_USE_FAST_MATH
+//  return __fdividef(a, b);
+//#else
   return a / b;
-#endif
+//#endif
 }
 
 template<>
@@ -80,11 +80,11 @@ __inline__ __device__ T Rsqrt(T x);
 
 template<>
 __inline__ __device__ float Rsqrt<float>(float x) {
-#ifdef OF_LAYER_NORM_USE_FAST_MATH
-  return __frsqrt_rn(x);
-#else
+//#ifdef OF_LAYER_NORM_USE_FAST_MATH
+//  return __frsqrt_rn(x);
+//#else
   return rsqrt(x);
-#endif
+//#endif
 }
 
 template<>
@@ -187,7 +187,7 @@ inline __device__ void WelfordCombine(T val, T* mean, T* m2, T* count) {
   // https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm
   *count += 1;
   T delta1 = val - *mean;
-  *mean += Div(delta1, *count);
+  *mean += delta1 * (1.f/(*count));
   T delta2 = val - *mean;
   *m2 += delta1 * delta2;
 }
@@ -196,7 +196,7 @@ template<typename T>
 inline __device__ void WelfordCombine(T b_mean, T b_m2, T b_count, T* mean, T* m2, T* count) {
   if (b_count == 0) { return; }
   T new_count = *count + b_count;
-  T nb_over_n = Div(b_count, new_count);
+  T nb_over_n = b_count * (1.f / new_count);
   T delta = b_mean - *mean;
   *mean += delta * nb_over_n;
   *m2 += b_m2 + delta * delta * (*count) * nb_over_n;
